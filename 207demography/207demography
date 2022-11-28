@@ -1,0 +1,144 @@
+#!/usr/bin/env python3
+##
+## EPITECH PROJECT, 2022
+## delivery
+## File description:
+## 207demography
+##
+
+from sys import argv
+from math import sqrt, pow
+import csv
+
+def print_help ():
+    print("USAGE")
+    print("    ./207demography code [...]\n")
+    print("DESCRIPTION")
+    print("    code    country code")
+
+def open_csv():
+    fd = []
+    with open("./207demography_data.csv", 'r') as csv_file:
+        reader = csv.reader(csv_file, delimiter=';')
+        next(reader)
+        for row in reader:
+            fd.append(row)
+        return (fd)
+
+def get_country_name(fd, column):
+    tab = []
+    for i in range(len(fd)):
+        tab.append(fd[i][column])
+    return (tab)
+
+def check_country(all_name, all_code, code, fd):
+    j = 0
+    i = 0
+    country = []
+    print("Country: ", end="")
+    while i < len(all_code):
+        if all_code[i] == code[j] and j == (len(code) -1):
+            print(all_name[i])
+            country.append(fd[i])
+        elif all_code[i] == code[j]:
+            print(all_name[i], " ", sep=',' , end ="")
+            country.append(fd[i])
+            j += 1
+            i = 0
+        i += 1
+    return (country)
+
+def total_years():
+    years = 0
+    tab_year = []
+    for i in range(1960, 2018):
+        years += i
+        tab_year.append(i)
+    i -= 1959
+    return (years, i, tab_year)
+
+def calc_of_b_fit1(total_year, total_pop, nbr_year, total, year):
+    b = ((nbr_year * total - total_year * total_pop) / (nbr_year * year - pow(total_year, 2)))
+    return b
+
+def calc_of_b_fit2(total_year, total_pop, nbr_year, total, population):
+    b = ((nbr_year * total - total_year * total_pop) / (nbr_year * population - pow(total_pop, 2)))
+    return b
+
+def calc_of_a_fit1(total_year, total_pop, nbr_year, b):
+    a = (((1.0 / nbr_year) * total_pop) - b * 1.0 / nbr_year * total_year)
+    return a
+
+def calc_of_a_fit2(total_year, total_pop, nbr_year, b):
+    a = (((1.0 / nbr_year) * total_year) - b * 1.0 / nbr_year * total_pop)
+    return a
+
+def fit1(total_country, b_fit1, a_fit1, tab_year, nbr_year):
+    square = 0
+    print("Fit1")
+    if a_fit1 >= 0:
+        print("    Y = {:.2f} X + {:.2f}".format(b_fit1 / 1000000, a_fit1 / 1000000))
+    else:
+        print("    Y = {:.2f} X - {:.2f}".format(b_fit1 / 1000000, a_fit1 / 1000000 * -1))
+    for i in range(len(total_country)):
+        square += pow(total_country[i] - ((b_fit1 / 1000000) * tab_year[i] + (a_fit1 / 1000000)) * 1000000, 2)
+    print("    Root-mean-square deviation: {:.2f}".format(sqrt(square / nbr_year) / 1000000))
+    print("    Population in 2050: {:.2f}".format(((b_fit1 / 1000000) * 2050) + (a_fit1 / 1000000)))
+
+def fit2(total_country, b_fit2, a_fit2, tab_year, nbr_year):
+    square = 0
+    print("Fit2")
+    if a_fit2 >= 0:
+        print("    X = {:.2f} Y + {:.2f}".format(b_fit2 * 1000000, a_fit2))
+    else:
+        print("    X = {:.2f} Y - {:.2f}".format(b_fit2 * 1000000, a_fit2 * -1))
+    for i in range(len(total_country)):
+        square += pow(total_country[i] - ((tab_year[i] - a_fit2) / (b_fit2 * 1000000)) * 1000000, 2)
+    print("    Root-mean-square deviation: {:.2f}".format(sqrt(square / nbr_year) / 1000000))
+    print("    Population in 2050: {:.2f}".format((2050 - a_fit2) / (b_fit2 * 1000000)))
+
+def demography():
+    code = []
+    tab_year = []
+    total_pop = 0
+    population = 0
+    year = 0
+    total = 0
+    total_country = [0] * 58
+    for i in range(1, len(argv)):
+        code.append(argv[i])
+    if (len(code) == 0):
+        exit(84)
+    fd = open_csv()
+    all_name = get_country_name(fd, 0)
+    all_code = get_country_name(fd, 1)
+    country = check_country(all_name, all_code, code, fd)
+    for i in range(len(country)):
+        for j in range(2, len(country[i])):
+            total_country[j - 2] += int(country[i][j])
+    total_year, nbr_year, tab_year = total_years()
+    for i in range(len(total_country)):
+        total_pop += total_country[i]
+        population += pow(total_country[i], 2)
+        year += pow(tab_year[i], 2)
+        total += tab_year[i] * total_country[i]
+    b_fit1 = calc_of_b_fit1(total_year, total_pop, nbr_year, total, year)
+    b_fit2 = calc_of_b_fit2(total_year, total_pop, nbr_year, total, population)
+    a_fit1 = calc_of_a_fit1(total_year, total_pop, nbr_year, b_fit1)
+    a_fit2 = calc_of_a_fit2(total_year, total_pop, nbr_year, b_fit2)
+    fit1(total_country, b_fit1, a_fit1, tab_year, nbr_year)
+    fit2(total_country, b_fit2, a_fit2, tab_year, nbr_year)
+    correlations = (nbr_year * total - total_year * total_pop) / sqrt((nbr_year * year - pow(total_year, 2)) * (nbr_year * population - pow(total_pop, 2)))
+    print("Correlation: {:.4f}".format(correlations))
+
+if __name__ == "__main__":
+    try:
+        if len(argv) == 2 and argv[1] == "-h":
+            print_help()
+        elif len(argv) >= 2:
+            demography()
+        else:
+            raise Exception("Invalid number of argument\n")
+    except Exception as excp:
+        print("Error:", excp)
+        exit(84)

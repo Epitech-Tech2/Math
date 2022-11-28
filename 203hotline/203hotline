@@ -1,0 +1,85 @@
+#!/usr/bin/python3
+##
+## EPITECH PROJECT, 2022
+## delivery
+## File description:
+## 202unsold
+##
+
+from sys import argv
+from time import time
+import math
+
+def print_help ():
+    print("USAGE")
+    print("    ./203hotline [n k | d]\n")
+    print("DESCRIPTION")
+    print("    n    n value for the computation of (n k)")
+    print("    k    k value for the computation of (n k)")
+    print("    d    average duration of calls (in seconds)")
+    exit(0)
+
+def get_binomial_coef(a, b):
+    return math.factorial(a) // (math.factorial(b) * math.factorial(a - b))
+
+def print_binomial_coef(a, b):
+    print("{:d}-combination of a set of size {:d}:\n{:d}".format(b, a, (get_binomial_coef(a, b))))
+    return 0
+
+def get_binomial(people, i, probability):
+    return get_binomial_coef(people, i) * pow(probability, i) * pow((1 - probability), (people - i))
+
+def binomial_distributions(a):
+    computTime = time()
+    probability = a / (3600 * 8)
+    overload = 0
+    print("Binomial distribution:")
+    for i in range (51):
+        result = (get_binomial(3500, i, probability))
+        print("{:d} -> {:.3f}".format(i, result), end='')
+        if i != 50:
+            print(end='\t')
+        if i > 25:
+            overload += result
+        if (i + 1) % 5 == 0:
+            print(end='\n')
+    if a > 320:
+        print("\nOverload: 100%")
+    else:
+        print("\nOverload: {:.1f}%".format(overload * 100))
+    print("Computation time: {:.2f}ms".format(((time()-computTime) * 100)))
+
+def poisson_distributions(a):
+    computTime = time()
+    people = 3500 * (a / (3600 * 8))
+    overload = 0
+    print("\nPoisson distribution:")
+    for i in range (51):
+        result = (math.exp(-people) * pow(people, i) / math.factorial(i))
+        print("{:d} -> {:.3f}".format(i, result), end='')
+        if i != 50:
+            print(end='\t')
+        if i > 25:
+            overload += result
+        if (i + 1) % 5 == 0:
+            print(end='\n')
+    if a > 320:
+        print("\nOverload: 100%")
+    else:
+        print("\nOverload: {:.1f}%".format(overload * 100))
+    print("Computation time: {:.2f}ms".format(((time()-computTime) * 100)))
+
+if __name__ == "__main__":
+    try:
+        if len(argv) == 2 and argv[1] == "-h":
+            print_help()
+        elif len(argv) == 2:
+            binomial_distributions(int(argv[1]))
+            poisson_distributions(int(argv[1]))
+        elif len(argv) == 3:
+            print_binomial_coef(int(argv[1]), int(argv[2]))
+        else:
+            raise Exception("Invalid number of argument\n")
+    except Exception as excp:
+        print("Error:", excp)
+        exit(84)

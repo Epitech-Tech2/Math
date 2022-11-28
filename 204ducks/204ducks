@@ -1,0 +1,75 @@
+#!/usr/bin/python3
+##
+## EPITECH PROJECT, 2022
+## delivery
+## File description:
+## 204ducks
+##
+
+from sys import argv
+import math
+
+def print_help ():
+    print("USAGE")
+    print("    /204ducks a\n")
+    print("DESCRIPTION")
+    print("    a    constant")
+    exit(0)
+
+def calc_probability (a, t):
+    return a * math.exp(-t) + (4 - 3 * a) * math.exp(t * -2) + (2 * a - 4) * math.exp(t * -4)
+
+def calc_probability_prime (a, t):
+    return -a * math.exp(-t) - (4 - 3 * a) / 2 * math.exp(-2 * t) - (2 * a - 4) / 4 * math.exp(-4 * t)
+
+def calc_overage_time (a):
+    result = float(0)
+    t = float(0)
+    while t < 100:
+        result += calc_probability(a, t) * t / 1000
+        t += 0.001
+    return result
+
+def calc_standart_deviation (a):
+    average = calc_overage_time(a)
+    result = float(0)
+    t = float(0)
+    while t < 100:
+        result += calc_probability(a, t) * math.pow(t - average, 2)  / 1000
+        t += 0.001
+    return math.sqrt(result)
+
+def calc_come_back (a, percent):
+    result = float(0)
+    t = float(0)
+    while (percent - 0.01) > result:
+        result += calc_probability(a, t / 100)
+        t += 1
+    return t / 100
+
+def print_ducks (a):
+    minute = (int)(calc_overage_time(a))
+    sec = math.ceil((calc_overage_time(a) - int(calc_overage_time(a))) * 60)
+    percent_1 = (calc_probability_prime(a, 1) - calc_probability_prime(a, 0)) * 100
+    percent_2 = (calc_probability_prime(a, 2) - calc_probability_prime(a, 0)) * 100
+    print("Average return time: {:.0f}m {:.0f}s" .format(minute, sec))
+    print("Standard deviation: {0:.3f}".format(calc_standart_deviation(a)))
+    print("Time after which 50%% of the ducks come back: {:.0f}m {:2d}s" .format(calc_come_back(a, 50), (int)(calc_come_back(a, 50) * 61)))
+    print("Time after which 99%% of the ducks come back: {:.0f}m {:2d}s" .format(calc_come_back(a, 99), (int)(calc_come_back(a, 99) * 60)))
+    print("Percentage of ducks back after 1 minute: {0:.1f}%".format(percent_1))
+    print("Percentage of ducks back after 2 minutes: {0:.1f}%".format(percent_2))
+
+if __name__ == "__main__":
+    try:
+        if len(argv) == 2 and argv[1] == "-h":
+            print_help()
+        elif len(argv) == 2:
+            a = float(argv[1])
+            if (a < 0 or a > 2.5):
+                print("a must be between 0 and 2.5")
+            print_ducks(a)
+        else:
+            raise Exception("Invalid number of argument\n")
+    except Exception as excp:
+        print("Error:", excp)
+        exit(84)

@@ -1,0 +1,111 @@
+#!/usr/bin/python3
+##
+## EPITECH PROJECT, 2022
+## delivery
+## File description:
+## 202unsold
+##
+
+from sys import argv
+import math
+
+def print_help ():
+    print("USAGE")
+    print("    ./202unsold a b")
+    print("DESCRIPTION")
+    print("    a    constant computed from the past results")
+    print("    b    constant computed from the past results")
+    exit(0)
+
+def verify_number(value):
+    if value <= 50:
+        exit(84)
+    return value
+
+def formula(x, y, a, b):
+    return ((a - x) * (b - y)) / ((5 * a - 150) * (5 * b - 150))
+
+def formula_all(y, a, b):
+    array = []
+    array1 = []
+    x = 0
+    if y == 60:
+        for i in range(5):
+            j = 0
+            x = 0
+            for j in range(5):
+                x += (formula((i + 1) * 10, (j + 1) * 10, a, b))
+            array1.append(x)
+        return array1
+    else:
+        for i in range(5):
+            array.append(formula((i + 1) * 10, y, a, b))
+        return array
+
+def formula_variance(a, array):
+    nb = 0
+    for i in range(10, 60, 10):
+        nb += i ** 2 * ((a - i) / ((5 * a) - 150))
+    return nb - (array ** 2)
+
+def print_result(a, b):
+    print("--------------------------------------------------------------------------------")
+    print("\tX=10\tX=20\tX=30\tX=40\tX=50\tY law")
+    array1 = formula_all(10, a, b)
+    arrayy = []
+    arrayy.append(array1[0] + array1[1] + array1[2] + array1[3] + array1[4])
+    print("Y=10\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}".format(array1[0], array1[1], array1[2], array1[3], array1[4], arrayy[0]))
+    array2 = formula_all(20, a, b)
+    arrayy.append(array2[0] + array2[1] + array2[2] + array2[3] + array2[4])
+    print("Y=20\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}".format(array2[0], array2[1], array2[2], array2[3], array2[4], arrayy[1]))
+    array3 = formula_all(30, a, b)
+    arrayy.append(array3[0] + array3[1] + array3[2] + array3[3] + array3[4])
+    print("Y=30\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}".format(array3[0], array3[1], array3[2], array3[3], array3[4], arrayy[2]))
+    array4 = formula_all(40, a, b)
+    arrayy.append(array4[0] + array4[1] + array4[2] + array4[3] + array4[4])
+    print("Y=40\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}".format(array4[0], array4[1], array4[2], array4[3], array4[4], arrayy[3]))
+    array5 = formula_all(50, a, b)
+    arrayy.append(array5[0] + array5[1] + array5[2] + array5[3] + array5[4])
+    print("Y=50\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}".format(array5[0], array5[1], array5[2], array5[3], array5[4], arrayy[4]))
+    array6 = formula_all(60, a, b)
+    print("X law\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}".format(array6[0], array6[1], array6[2], array6[3], array6[4], 1))
+    print("--------------------------------------------------------------------------------")
+    print("z\t20\t30\t40\t50\t60\t70\t80\t90\t100")
+    array7 = []
+    array7.append(formula(10, 10, a, b))
+    array7.append(array2[0] + array1[1])
+    array7.append(array3[0] + array2[1] + array1[2])
+    array7.append(array4[0] + array3[1] + array2[2] + array1[3])
+    array7.append(array5[0] + array4[1] + array3[2] + array2[3] + array1[4])
+    array7.append(array5[1] + array4[2] + array3[3] + array2[4])
+    array7.append(array5[2] + array4[3] + array3[4])
+    array7.append(array5[3] + array4[4])
+    array7.append(array5[4])
+    print("p(Z=z)\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}\t{:.3f}".format(array7[0], array7[1], array7[2], array7[3], array7[4], array7[5], array7[6], array7[7], array7[8]))
+    print("--------------------------------------------------------------------------------")
+    arrayExp = []
+    arrayExp.append(array6[0] * 10 + array6[1] * 20 + array6[2] * 30 + array6[3] * 40 + array6[4] * 50)
+    arrayExp.append(arrayy[0] * 10 + arrayy[1] * 20 + arrayy[2] * 30 + arrayy[3] * 40 + arrayy[4] * 50)
+    arrayExp.append(array7[0] * 20 + array7[1] * 30 + array7[2] * 40 + array7[3] * 50 + array7[4] * 60 + array7[5] * 70 + array7[6] * 80 + array7[7] * 90 + array7[8] * 100)
+    print("expected value of X:\t{:.1f}".format(arrayExp[0]))
+    print("variance of X:\t\t{:.1f}".format(formula_variance(a, arrayExp[0])))
+    print("expected value of Y:\t{:.1f}".format(arrayExp[1]))
+    print("variance of Y:\t\t{:.1f}".format(formula_variance(b, arrayExp[1])))
+    print("expected value of Z:\t{:.1f}".format(arrayExp[2]))
+    print("variance of Z:\t\t{:.1f}".format((formula_variance(a, arrayExp[0]) + formula_variance(b, arrayExp[1]))))
+    print("--------------------------------------------------------------------------------")
+    return 0
+
+if __name__ == "__main__":
+    try:
+        if len(argv) == 2 and argv[1] == "-h":
+            print_help()
+        elif len(argv) == 3:
+            a = verify_number(int(argv[1]))
+            b = verify_number(int(argv[2]))
+            print_result(a, b)
+        else:
+            raise Exception("Invalid number of argument\n")
+    except Exception as excp:
+        print("Error:", excp)
+        exit(84)

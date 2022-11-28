@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+##
+## EPITECH PROJECT, 2022
+## delivery
+## File description:
+## 205IQ
+##
+
+from sys import argv
+from math import sqrt, exp, pi
+
+def print_help ():
+    print("USAGE")
+    print("    ./205IQ u s [IQ1] [IQ2]\n")
+    print("DESCRIPTION")
+    print("    u        mean")
+    print("    s        standard deviation")
+    print("    IQ1      minimum IQ")
+    print("    IQ2      maximum IQ")
+
+def density_funct (i, u, s):
+    return (1 / (float(s) * sqrt(2 * pi))) * exp(-0.5 * pow((float(i) - float(u)) / float(s), 2))
+
+def print_result (u, s, iq1, iq2):
+    i = 0
+    res = 0
+    if len(argv) == 3:
+        for i in range(201):
+            res = density_funct(i, u, s)
+            print("{:1d} {:.5f}".format(i, round(res, 5)))
+    elif len(argv) == 4:
+        while (i < int(iq1)):
+            res += density_funct(i, u, s)
+            i += 0.01
+        print("{:.1f}% of people have an IQ inferior to {:1d}".format(res, iq1))
+    else:
+        i = int(iq1)
+        while (i < int(iq2)):
+            res += density_funct(i, u, s)
+            i += 0.01
+        print("{:.1f}% of people have an IQ between {:1d} and {:1d}".format(res, iq1, iq2))
+
+def check_argv ():
+    u = int(argv[1])
+    s = int(argv[2])
+    iq1 = 0
+    iq2 = 201
+    if (len(argv) == 4):
+        iq1 = int(argv[3])
+    if (len(argv) == 5):
+        iq1 = int(argv[3])
+        iq2 = int(argv[4])
+    if u < 0 or s < 0 or iq1 < 0 or iq2 < 0 or u > 200 or iq2 > 201:
+        exit(84)
+    print_result(u, s, iq1, iq2)
+
+
+if __name__ == "__main__":
+    try:
+        if len(argv) == 2 and argv[1] == "-h":
+            print_help()
+        elif len(argv) >= 3 and len(argv) <= 5:
+            check_argv()
+        else:
+            raise Exception("Invalid number of argument\n")
+    except Exception as excp:
+        print("Error:", excp)
+        exit(84)

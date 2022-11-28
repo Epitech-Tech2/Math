@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+##
+## EPITECH PROJECT, 2022
+## delivery
+## File description:
+## 206neutrinos
+##
+
+from sys import argv
+from math import sqrt, pow
+
+def print_help ():
+    print("USAGE")
+    print("    ./206neutrinos n a h sd\n")
+    print("DESCRIPTION")
+    print("    n    number of values")
+    print("    a    arithmetic mean")
+    print("    h    harmonic mean")
+    print("    sd   standard deviation")
+
+def setValue(n):
+    n += 1
+    return (n)
+
+def getStandardDeviation(nbr, n, a, tmp):
+    sd = sqrt(((tmp + pow(nbr, 2)) / n) - pow(a, 2))
+    return (sd)
+
+def getArithmeticMean(nbr, n, a):
+    nb = ((a * (n - 1)) + nbr) / n
+    return (nb)
+
+def getRootMean(tmp, nbr, n):
+    ms = sqrt((tmp + pow(nbr, 2)) / n)
+    return (ms)
+
+def getHarmonicMean(nbr, n, h):
+    nb = n / ((1 / nbr) + ((n - 1) / h))
+    return (nb)
+
+def print_func(n, a, h, sd, ms):
+    print ("    Number of values:   {:1d}".format(n))
+    print ("    Standard deviation: {:.2f}".format(sd))
+    print ("    Arithmetic mean:    {:.2f}".format(a))
+    print ("    Root mean square:   {:.2f}".format(ms))
+    print ("    Harmonic mean:      {:.2f}\n".format(h))
+
+def neutrinos():
+    n = int(argv[1])
+    a = int(argv[2])
+    h = int(argv[3])
+    sd = int(argv[4])
+    while (True):
+        input_value = input("Enter next value: ")
+        if ((input_value == "END")):
+            exit(0)
+        nbr = int(input_value)
+        if (nbr < 0):
+            exit(84)
+        tmp = (pow(sd, 2) + pow(a, 2)) * n
+        n = setValue(n)
+        a = getArithmeticMean(nbr, n, a)
+        h = getHarmonicMean(nbr, n, h)
+        sd = getStandardDeviation(nbr, n, a, tmp)
+        ms = getRootMean(tmp, nbr, n)
+        print_func(n, a, h, sd, ms)
+
+if __name__ == "__main__":
+    try:
+        if len(argv) == 2 and argv[1] == "-h":
+            print_help()
+        elif len(argv) == 5:
+            neutrinos()
+        else:
+            raise Exception("Invalid number of argument\n")
+    except Exception as excp:
+        print("Error:", excp)
+        exit(84)

@@ -1,0 +1,154 @@
+#!/usr/bin/python3
+##
+## EPITECH PROJECT, 2022
+## delivery
+## File description:
+## 201yams
+##
+
+from sys import argv
+import math
+
+def print_help ():
+    print("USAGE")
+    print("    ./201yams d1 d2 d3 d4 d5 c")
+    print("DESCRIPTION")
+    print("    d1      value of the first die (0 if not thrown)")
+    print("    d2      value of the second die (0 if not thrown)")
+    print("    d3      value of the third die (0 if not thrown)")
+    print("    d4      value of the fourth die (0 if not thrown)")
+    print("    d5      value of the fifth die (0 if not thrown)")
+    print("    c       expected combination")
+    exit(0)
+
+def binomiale(a, b):
+    res = (math.factorial(a) / (math.factorial(b) * math.factorial(a - b))) * pow(1 / 6, b) * pow(5 / 6, a - b)
+    return (res)
+
+def verify_number (value, mode = 0):
+    if value < 0 or value > 6:
+        exit(84)
+    if mode == 1:
+        if value <= 0 or value > 6:
+            exit(84)
+    return value
+
+def nb_occurence (number):
+    occurence = 0
+    if d1 == number:
+        occurence += 1
+    if d2 == number:
+        occurence += 1
+    if d3 == number:
+        occurence += 1
+    if d4 == number:
+        occurence += 1
+    if d5 == number:
+        occurence += 1
+    return occurence
+
+def calc_probability (combination, number):
+    result = 0.0
+    occurence = nb_occurence(number)
+    if occurence >= combination:
+        result = 1
+    else:
+        for i in range(combination - occurence, 5 - occurence + 1):
+            result += binomiale(5 - occurence, i)
+    return result * 100
+
+def calc_pair (number):
+    probability = calc_probability(2, number)
+    print("Chances to get a {} pair: {:.2f}%".format(number, probability))
+
+def calc_three (number):
+    probability = calc_probability(3, number)
+    print("Chances to get a {} three-of-a-kind: {:.2f}%".format(number,probability))
+
+def calc_four (number):
+    probability = calc_probability(4, number)
+    print("Chances to get a {} four-of-a-kind: {:.2f}%".format(number, probability))
+
+def finder(number):
+    ret = 0
+    for i in range(5):
+        if (listNumber[i] == number):
+            ret += 1
+    if (ret > 1):
+        ret = 1
+    return (ret)
+
+def calc_straight (number):
+    if (int(number) == 6):
+        occurence = finder(2) + finder(3) + finder(4) + finder(5) + finder(6)
+    else:
+        occurence = finder(1) + finder(2) + finder(3) + finder(4) + finder(5)
+    if occurence == 5:
+        res = 1
+    else:
+        res = math.factorial(5 - occurence) /  pow(6, 5 - occurence)
+    print("Chances to get a {} straight: {:.2f}%".format(number, res * 100))
+
+def calc_yams (number):
+    probability = calc_probability(5, number)
+    print("Chances to get a {} yams: {:.2f}%".format(number, probability))
+
+def calc_full (number, number2):
+    result = 0.0
+    if number == number2:
+        exit(84)
+    occurence = nb_occurence(number)
+    occurence2 = nb_occurence(number2)
+    if occurence == 3 and occurence2 == 2:
+        result = 1
+    else:
+        if (occurence > 3):
+            occurence = 3
+        if (occurence2 > 2):
+            occurence2 = 2
+        pair = math.factorial(5 - occurence - occurence2) / (math.factorial(3 - occurence2) * math.factorial((5 - occurence2 - occurence) - (3 - occurence)))
+        brelan = math.factorial(2 - occurence2) / (math.factorial(2 - occurence2) * math.factorial((2 - occurence2) - (2 - occurence2)))
+        result = (pair * brelan) / pow(6, 5 - occurence - occurence2)
+    print("Chances to get a {} full of {}: {:.2f}%".format(number, number2, result * 100))
+
+def princ ():
+    combination = argv[6].split('_')
+    if len(combination) == 2:
+        if combination[0] == "pair":
+            calc_pair(verify_number(int(combination[1]), 1))
+        elif combination[0] == "three":
+            calc_three(verify_number(int(combination[1]), 1))
+        elif combination[0] == "four":
+            calc_four(verify_number(int(combination[1]), 1))
+        elif combination[0] == "straight":
+            calc_straight(verify_number(int(combination[1]), 1))
+        elif combination[0] == "yams":
+            calc_yams(verify_number(int(combination[1]), 1))
+    elif len(combination) == 3:
+        if combination[0] == "full":
+            calc_full(verify_number(int(combination[1]), 1), verify_number(int(combination[2]), 1))
+    else:
+        raise Exception("Invalid combination\n")
+
+if __name__ == "__main__":
+    try:
+        if len(argv) == 2 and argv[1] == "-h":
+            print_help()
+        elif len(argv) == 7:
+            listNumber = list()
+            d1 = verify_number(int(argv[1]))
+            d2 = verify_number(int(argv[2]))
+            d3 = verify_number(int(argv[3]))
+            d4 = verify_number(int(argv[4]))
+            d5 = verify_number(int(argv[5]))
+            listNumber.append(d1)
+            listNumber.append(d2)
+            listNumber.append(d3)
+            listNumber.append(d4)
+            listNumber.append(d5)
+            princ()
+        else:
+            raise Exception("Invalid number of argument\n")
+    except Exception as excp:
+        print("Error:", excp)
+        exit(84)
